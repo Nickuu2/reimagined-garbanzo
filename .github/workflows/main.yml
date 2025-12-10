@@ -108,9 +108,9 @@ jobs:
         id: cache-restore
         with:
           path: worker_data.json.gpg
-          key: persistent-data-encrypted-${{ github.run_id }}
+          key: persistent-data-v1-${{ github.run_number }}
           restore-keys: |
-            persistent-data-encrypted-
+            persistent-data-v1-
 
       - name: Decrypt Data
         if: steps.check_skip.outputs.should_skip != 'true' && steps.checkpause.outputs.paused != 'true' && steps.cache-restore.outputs.cache-hit == 'true'
@@ -212,4 +212,4 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: worker_data.json.gpg
-          key: persistent-data-encrypted-${{ github.run_id }}
+          key: persistent-data-v1-${{ github.run_number }}
