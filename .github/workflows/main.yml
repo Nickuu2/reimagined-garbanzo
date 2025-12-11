@@ -113,12 +113,17 @@ jobs:
             persistent-data-v1-
 
       - name: Decrypt Data
-        if: steps.check_skip.outputs.should_skip != 'true' && steps.checkpause.outputs.paused != 'true' && steps.cache-restore.outputs.cache-hit == 'true'
+        if: steps.check_skip.outputs.should_skip != 'true' && steps.checkpause.outputs.paused != 'true'
+        run: |
+          if [ -f worker_data.json.gpg ]; then
+            gpg --quiet --batch --yes --decrypt --passphrase "$GPG_PASSPHRASE" \
+            --output worker_data.json worker_data.json.gpg
+            echo "✅ Decrypted persistent data"
+          else
+            echo "ℹ️ No encrypted data file found - starting fresh"
+          fi
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: |
-          gpg --quiet --batch --yes --decrypt --passphrase "$GPG_PASSPHRASE" \
-          --output worker_data.json worker_data.json.gpg
 
       - name: Run Worker Script
         if: steps.check_skip.outputs.should_skip != 'true' && steps.checkpause.outputs.paused != 'true'
