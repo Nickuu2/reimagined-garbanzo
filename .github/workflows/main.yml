@@ -131,7 +131,7 @@ jobs:
           # Only set CI-specific variables and secrets - let .env control the rest
           AUTH_STATE_FILE: '${{ github.workspace }}/auth_state.json'
           PROXY_IP_ROMANIA: ${{ secrets.PROXY_IP_ROMANIA }}
-          PROXY_IP_JAPAN: ${{ secrets.PROXY_IP_JAPAN }}
+          PROXY_IP_CZECHIA: ${{ secrets.PROXY_IP_CZECHIA }}
           PROXY_PORT: ${{ secrets.PROXY_PORT }}
           PROXY_USERNAME: ${{ secrets.PROXY_USERNAME }}
           PROXY_PASSWORD: ${{ secrets.PROXY_PASSWORD }}
