@@ -42,6 +42,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y xclip xvfb
           python -m pip install --upgrade pip
+          pip install pyperclip
           pip install -r requirements.txt
           python -m playwright install chromium
 
