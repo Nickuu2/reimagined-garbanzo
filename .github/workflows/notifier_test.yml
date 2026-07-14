@@ -1,0 +1,53 @@
+name: Surebet Scraper
+
+on:
+  schedule:
+    # Runs every 4 hours. The script has an infinite loop that will run until GitHub Action's 6-hour timeout,
+    # then this cron schedule will start it up again.
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+
+concurrency:
+  # Ensure only one instance of the scraper runs at a time
+  group: surebet-scraper
+  cancel-in-progress: true
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install playwright python-dotenv requests
+          python -m playwright install chromium --with-deps
+
+      - name: Run Scraper
+        env:
+          # Pulling proxy and discord settings from GitHub Secrets
+          PROXY_IP_ROMANIA: ${{ secrets.PROXY_IP_ROMANIA }}
+          PROXY_IP_CZECHIA: ${{ secrets.PROXY_IP_CZECHIA }}
+          PROXY_PORT: ${{ secrets.PROXY_PORT }}
+          PROXY_USERNAME: ${{ secrets.PROXY_USERNAME }}
+          PROXY_PASSWORD: ${{ secrets.PROXY_PASSWORD }}
+          LOGS_WEBHOOK_URL: ${{ secrets.LOGS_WEBHOOK_URL }}
+          USE_PROXY: ${{ secrets.USE_PROXY || 'false' }}
+          AUTH_STATE_JSON: ${{ secrets.AUTH_STATE_JSON }}
+          # To ensure logs are streamed to GitHub Actions console immediately
+          PYTHONUNBUFFERED: 1 
+        run: |
+          # Write auth state if provided via secret
+          if [ -n "$AUTH_STATE_JSON" ]; then
+            echo "$AUTH_STATE_JSON" > auth_state.json
+          fi
+          
+          # Run the scraper
+          xvfb-run -a python surebet_scraper.py || true
