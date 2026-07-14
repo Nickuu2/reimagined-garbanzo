@@ -16,8 +16,12 @@ jobs:
   run-scraper:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout Private Repo
         uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.PRIVATE_REPO_NAME }}
+          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+          ref: main
 
       - name: Setup Python
         uses: actions/setup-python@v5
